@@ -115,7 +115,6 @@ class FileDifferences:
   def get_fn_names(self, prev):
     fn_map = {}
     target = os.getcwd() + '/repo/' + self.filename if not prev else os.getcwd() + '/repo_prev/' + self.filename
-    # fn_table = subprocess.check_output(['ctags', '-x', '--c-kinds=fp', '--fields=+ne', '--output-format=json', target]).decode('utf-8').strip().split('\n')
     proc = subprocess.Popen(['ctags', '-x', '--c-kinds=fp', '--fields=+ne', '--output-format=json', target], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     out, err = proc.communicate()
@@ -239,18 +238,11 @@ class RepoManager:
       print(e)
       sys.exit(1)
 
-    # if commit_hash:
-    #   hash_oid = pygit2.Oid(hex=commit_hash)
-    #   repo.reset(hash_oid, pygit2.GIT_RESET_HARD)
-
     return repo
 
   def get_repo(self, repo_path, rev=''):
     # Keep track of paths of cloned repos
     self.cloned_repos_paths.append(repo_path)
-
-    # # Do not look outside this path
-    # ceil_dir = dirname(abspath(repo_path))
 
     # Check if we have a repo
     discover_repo_path = pygit2.discover_repository(repo_path, 0, dirname(os.getcwd()))
@@ -269,7 +261,12 @@ class RepoManager:
 
       if rev:
         PrintManager.print('Changing to desired commit...')
-        change = repo.revparse_single(rev).hex
+        try:
+          change = repo.revparse_single(rev).hex
+        except:
+          sys.stdout = PrintManager.old_stdout
+          print('Could not parse git revision. Please enter a valid hash (symbols like ^, ~ are permitted)')
+          sys.exit(1)
         hash_oid = pygit2.Oid(hex=change)
         repo.reset(hash_oid, pygit2.GIT_RESET_HARD)
         PrintManager.print('Changed to %s.' % (change,))
@@ -300,7 +297,13 @@ class RepoManager:
       
       # Check that commits match
       current_commit = repo.revparse_single('HEAD')
-      target_commit = repo.revparse_single(rev)
+      target_commit = None
+      try:
+        target_commit = repo.revparse_single(rev)
+      except:
+        sys.stdout = PrintManager.old_stdout
+        print('Could not parse git revision. Please enter a valid hash (symbols like ^, ~ are permitted)')
+        sys.exit(1)
       
       if target_commit and current_commit.hex != target_commit.hex:
         PrintManager.print('Changing to desired commit...')
@@ -366,8 +369,7 @@ class RepoManager:
       prev = curr_repo.revparse_single(head + str(i + 1))
       curr = curr_repo.revparse_single(head + str(i))
       
-      # PrintManager.print("Comparing with previous commit: " + prev.hex)
-      # PrintManager.print()
+      PrintManager.print("Comparing with previous commit: " + prev.hex)
 
       diff = curr_repo.diff(prev, curr, context_lines=0)
       diff_summary = self.compute_diffs(diff, curr.hex)
@@ -532,7 +534,6 @@ def main(main_args):
   parser.add_argument('gitrepo', metavar='repo', help='git repo url')
   parser.add_argument('-hash', help='patch hash')
   parser.add_argument('--print-mode', dest='print', choices=['full', 'simple', 'only-fn'], default='full', help='print format')
-  # parser.add_argument('-f', '--only-function-names', dest='fn_names', action='store_true', help='display only a list of function names')
   parser.add_argument('-c', '--cache', action='store_true', help='do not delete cloned repos after finishing')
   parser.add_argument('--verbose', action='store_true', help='display helpful progress messages')
   parser.add_argument('-s', '--summary', action='store_true', help='prints a summary of the data')
