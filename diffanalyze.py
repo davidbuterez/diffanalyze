@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import argparse
 import os
@@ -23,7 +23,7 @@ class PrintManager:
   should_print = False
   old_stdout = sys.stdout
   output = StringIO()
-  sys.stdout = output
+  # sys.stdout = output
   
   @staticmethod
   def print(*args, **kwargs):
@@ -550,6 +550,8 @@ def main(main_args):
   PrintManager.should_print = bool(args['verbose'])
 
   repo_manager = RepoManager(args['gitrepo'], bool(args['cache']), args['print'])
+
+  sys.stdout = PrintManager.output
    
   if args['hash'] and not args['range']:
     repo_manager.compare_patches_in_range(args['hash'], times=1)
