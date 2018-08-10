@@ -551,7 +551,7 @@ def main(main_args):
 
   repo_manager = RepoManager(args['gitrepo'], bool(args['cache']), args['print'])
 
-  sys.stdout = PrintManager.output
+  #sys.stdout = PrintManager.output
    
   if args['hash'] and not args['range']:
     repo_manager.compare_patches_in_range(args['hash'], times=1)

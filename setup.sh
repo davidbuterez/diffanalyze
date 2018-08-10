@@ -89,11 +89,10 @@ check_linux_package libssl-dev
 check_linux_package git
 check_linux_package cmake
 check_linux_package openssl
-#check_linux_package libgit2-dev
 check_linux_package autoconf
 check_linux_package pkg-config
-#check_linux_package checkinstall
-#check_linux_package ctags
+check_linux_package libjansson-dev
+check_linux_package libjansson4
 
 check_tkinter
 
@@ -106,17 +105,19 @@ if ! [ -f /usr/local/lib/libgit2.so ]; then
 	cmake . > /dev/null 2>&1
 	make > /dev/null 2>&1
 	sudo make install > /dev/null 2>&1
+	cd ..
 else
 	echo "libgit2 OK."
 fi
 
-echo "Installing universal-ctags... Will overwrite current ctags."
+echo "Installing universal-ctags..."
 git clone https://github.com/universal-ctags/ctags.git > /dev/null 2>&1
 cd ctags
 ./autogen.sh > /dev/null 2>&1
 ./configure --program-prefix=universal > /dev/null 2>&1
 make > /dev/null 2>&1
 sudo make install > /dev/null 2>&1
+cd ..
 
 if [ $? -eq 0 ]; then 
         echo "universal-ctags OK."
@@ -126,8 +127,7 @@ check_python_module pygit2 http://www.pygit2.org/install.html
 check_python_module matplotlib https://matplotlib.org/users/installing.html
 check_python_module termcolor https://pypi.org/project/termcolor/
 
-echo $PWD
 
-cd ../..
+cd ..
 rm -rf setup_temp
 echo "Setup finished."
