@@ -39,7 +39,7 @@ Arguments:
 If you are using Ubuntu, run the **setup.sh** script:
     `./setup.sh`
 
-This will check and install any missing packages and libraries. The script was tested on a fresh install of Ubuntu 16.04, where the following need to be available:
+This will check and install any missing packages and libraries. The script was tested on a fresh install of Ubuntu 16.04, where the following will be required:
 
 - python3
 - pip3
@@ -62,4 +62,4 @@ Python also requires the following modules:
 
 These will be installed automatically by the script (pygit2 is the most problematic, if the script could not install it, it will provide a link to the official installation guide).
 
-The default version of *ctags* that is available on Ubuntu is *Exuberant Ctags*. diffanalyze requires *Universal Ctags*, which provides additional features. The setup script will install the rquired version as **universalctags** (should avoid conflicts with the default one).
+The default version of *ctags* that is available on Ubuntu is *Exuberant Ctags*. diffanalyze requires *Universal Ctags*, which provides additional features. The setup script will install the required version as **universalctags** (should avoid conflicts with the default one).
