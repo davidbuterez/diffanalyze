@@ -39,7 +39,7 @@ Arguments:
 If you are using Ubuntu, run the **setup.sh** script:
     `./setup.sh`
 
-This will check and install any missing packages and libraries. The script was tested on a fresh install of Ubuntu 16.04, where the following will be required:
+This will check and install any missing packages and libraries. The script was tested on a fresh install of Ubuntu 16.04 and Ubuntu 18.04, where the following will be required:
 
 - python3
 - pip3
