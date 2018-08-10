@@ -13,7 +13,9 @@ check_linux_package () {
         echo "$1 OK."
     else
         echo "$1 is not installed. Attempting to install (Ubuntu)..."
-        sudo apt-get --assume-yes install $1 > /dev/null 2>&1
+	pkg=$1
+	if ! [ -z "$2" ]; then pkg=$2; fi
+        sudo apt-get --assume-yes install $pkg > /dev/null 2>&1
         if [ $? -eq 0 ]; then 
             echo "$1 OK."
         else
@@ -47,7 +49,7 @@ check_python_module () {
     if [ $? -eq 0 ]; then 
         echo "$1 OK."
     else
-        pip3 install $1 > /dev/null 2>&1
+        pip3 install $1
         if [ $? -eq 0 ]; then 
             echo "Installed $1."
         else
@@ -79,35 +81,53 @@ check_python_module () {
 ##### Main setup script #####
 
 check_linux_package python3
-check_linux_package pip3
+check_linux_package pip3 python3-pip
+check_linux_package python3-dev
+check_linux_package libffi6 
+check_linux_package libffi-dev
+check_linux_package libssl-dev
 check_linux_package git
 check_linux_package cmake
 check_linux_package openssl
-check_linux_package libgit2-dev
-# check_linux_package autoconf
-# check_linux_package pkg-config
-# check_linux_package checkinstall
-check_linux_package ctags
+#check_linux_package libgit2-dev
+check_linux_package autoconf
+check_linux_package pkg-config
+#check_linux_package checkinstall
+#check_linux_package ctags
 
 check_tkinter
 
-# echo "Checking if libgit2 is installed..."
-# if ! [ -f /usr/local/lib/libgit2.so ]; then
-#     echo "libgit2 is not installed. Attempting to install (Ubuntu)..."
-#     wget https://github.com/libgit2/libgit2/archive/v0.27.0.tar.gz > /dev/null 2>&1
-#     tar xzf v0.27.0.tar.gz
-#     cd libgit2-0.27.0/
-#     cmake .
-#     make
-#     sudo make install
-# else
-#     echo "libgit2 OK."
-# fi
+echo "Checking if libgit2 is installed..."
+if ! [ -f /usr/local/lib/libgit2.so ]; then
+	echo "libgit2 is not installed. Attempting to install (Ubuntu)..."
+	wget https://github.com/libgit2/libgit2/archive/v0.27.0.tar.gz > /dev/null 2>&1
+	tar xzf v0.27.0.tar.gz
+	cd libgit2-0.27.0/
+	cmake . > /dev/null 2>&1
+	make > /dev/null 2>&1
+	sudo make install > /dev/null 2>&1
+else
+	echo "libgit2 OK."
+fi
+
+echo "Installing universal-ctags... Will overwrite current ctags."
+git clone https://github.com/universal-ctags/ctags.git > /dev/null 2>&1
+cd ctags
+./autogen.sh > /dev/null 2>&1
+./configure --program-prefix=universal > /dev/null 2>&1
+make > /dev/null 2>&1
+sudo make install > /dev/null 2>&1
+
+if [ $? -eq 0 ]; then 
+        echo "universal-ctags OK."
+fi
 
 check_python_module pygit2 http://www.pygit2.org/install.html
 check_python_module matplotlib https://matplotlib.org/users/installing.html
 check_python_module termcolor https://pypi.org/project/termcolor/
 
-cd ..
+echo $PWD
+
+cd ../..
 rm -rf setup_temp
 echo "Setup finished."

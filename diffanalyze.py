@@ -115,7 +115,7 @@ class FileDifferences:
   def get_fn_names(self, prev):
     fn_map = {}
     target = os.getcwd() + '/repo/' + self.filename if not prev else os.getcwd() + '/repo_prev/' + self.filename
-    proc = subprocess.Popen(['ctags', '-x', '--c-kinds=fp', '--fields=+ne', '--output-format=json', target], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(['universalctags', '-x', '--c-kinds=fp', '--fields=+ne', '--output-format=json', target], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     out, err = proc.communicate()
 
