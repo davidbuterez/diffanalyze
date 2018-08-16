@@ -492,7 +492,7 @@ class RepoManager:
 
     RepoManager.check_dirs()
     path = 'img/skip/' if skip else 'img/'
-    plt.savefig(path + 'function_commits.pdf', bbox_inches='tight')
+    plt.savefig(path + 'function_commits.png', bbox_inches='tight')
 
   def plot_fn_per_commit_restricted(self, skip, limit):
     ordered_dict = self.order_results()
@@ -512,7 +512,7 @@ class RepoManager:
     
     RepoManager.check_dirs()
     path = 'img/skip/' if skip else 'img/'
-    plt.savefig(path + 'function_commits_restricted.pdf', bbox_inches='tight')
+    plt.savefig(path + 'function_commits_restricted.png', bbox_inches='tight')
 
   def plot_other_changed(self, skip):
     ordered_other_dict = self.order_results(other=True)
@@ -525,7 +525,7 @@ class RepoManager:
 
     RepoManager.check_dirs()
     path = 'img/skip/' if skip else 'img/'
-    plt.savefig(path + 'no_function_commits.pdf', bbox_inches='tight')    
+    plt.savefig(path + 'no_function_commits.png', bbox_inches='tight')    
 
   def summary(self):
     print('Information from other changed files:')
@@ -576,7 +576,7 @@ def main(main_args):
   parser.add_argument('-i', '--skip-initial', dest='skip', action='store_true', help='skip initial commit - can be very large')
   parser.add_argument('-l', '--limit', type=int, help='plot commits up to this one')
   parser.add_argument('-ri', '--rangeInt', type=int, metavar='N', help='look at patches for the previous N commits (preceding HASH)')
-  parser.add_argument('-rh', '--range', metavar='INIT_HASH', help='look at patches between INIT_HASH and HASH (inclusive)')
+  parser.add_argument('-rh', '--range', metavar='INIT_HASH', help='look at patches between INIT_HASH and HASH')
   parser.add_argument('--save-json', dest='json', action='store_true', help='output function update information in JSON format')
 
   # Dictionary of arguments
