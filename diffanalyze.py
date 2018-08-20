@@ -23,7 +23,6 @@ class OutputManager:
   should_print = False
   old_stdout = sys.stdout
   output = StringIO()
-  # sys.stdout = output
   
   @staticmethod
   def print(*args, **kwargs):
@@ -115,7 +114,7 @@ class FileDifferences:
   def get_fn_names(self, prev):
     fn_map = {}
     target = os.getcwd() + '/repo/' + self.filename if not prev else os.getcwd() + '/repo_prev/' + self.filename
-    proc = subprocess.Popen(['ctags', '-x', '--c-kinds=fp', '--fields=+ne', '--output-format=json', target], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(['universalctags', '-x', '--c-kinds=fp', '--fields=+ne', '--output-format=json', target], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     out, err = proc.communicate()
 
@@ -444,7 +443,10 @@ class RepoManager:
       if self.save_json:
         diffs = diff_summary.diff_for_json()
         if diffs:
-          updates_json[patch_hash] = diffs
+          lines_no = 0
+          for _, lines in diffs.items():
+            lines_no += len(lines)
+          updates_json[patch_hash] = lines_no
 
       if not original_hash and skip_initial:
         print('Skipping original commit...')

@@ -37,6 +37,7 @@ Arguments:
 
 
 ## Installation
+### Ubuntu
 If you are using Ubuntu, run the **setup.sh** script:
     `./setup.sh`
 
@@ -64,3 +65,14 @@ Python also requires the following modules:
 These will be installed automatically by the script (pygit2 is the most problematic, if the script could not install it, it will provide a link to the official installation guide).
 
 The default version of *ctags* that is available on Ubuntu is *Exuberant Ctags*. diffanalyze requires *Universal Ctags*, which provides additional features. The setup script will install the required version as **universalctags** (should avoid conflicts with the default one).
+
+### Mac OS X
+Tested on Mac OS X Sierra (10.12).
+Make sure you have `git`,`python3` and `pip3` installed.
+Assuming you have `brew` installed:
+- `brew install jansson`
+- `brew install libgit2`
+- `pip3 install pygit2`
+- `pip3 installl matplotlib`
+- `pip3 install termcolor`
+- `git clone https://github.com/universal-ctags/ctags; cd ctags; ./autogen.sh; ./configure --program-prefix=universal; make`
