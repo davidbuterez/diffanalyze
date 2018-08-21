@@ -605,6 +605,7 @@ def main(main_args):
     repo_manager.summary()
 
   if args['plot']:
+    plt.switch_backend('Qt4Agg')
     manager = plt.get_current_fig_manager()
     manager.window.showMaximized()
 

@@ -74,5 +74,6 @@ Assuming you have `brew` installed:
 - `brew install libgit2`
 - `pip3 install pygit2`
 - `pip3 installl matplotlib`
+- `pip3 install pyqt5`
 - `pip3 install termcolor`
 - `git clone https://github.com/universal-ctags/ctags; cd ctags; ./autogen.sh; ./configure --program-prefix=universal; make`
