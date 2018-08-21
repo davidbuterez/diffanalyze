@@ -93,6 +93,7 @@ check_linux_package autoconf
 check_linux_package pkg-config
 check_linux_package libjansson-dev
 check_linux_package libjansson4
+check_linux_package python3-pyqt4
 
 check_tkinter
 
