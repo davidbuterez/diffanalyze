@@ -215,7 +215,7 @@ class DiffSummary:
 
 class RepoManager:
 
-  def __init__(self, repo_url, cache, print_mode, save_json):
+  def __init__(self, repo_url, cache, print_mode, save_json, track_json):
     self.repo_url = repo_url
     self.cache = cache
     self.allowed_extensions = ['.c']#, '.h']
@@ -225,6 +225,7 @@ class RepoManager:
     self.cloned_repos_paths = []
     self.original_commit = None
     self.save_json = save_json
+    self.track_json = track_json
 
   def get_repo_paths(self):
     # Path where repo is supposed to be
@@ -408,7 +409,26 @@ class RepoManager:
   def repo_to_commit(repo, commit_hash):
     repo.reset(pygit2.Oid(hex=commit_hash), pygit2.GIT_RESET_HARD)
 
-  def get_updated_fn_per_commit(self, skip_initial=False, testing=False):
+  def commit_list(self, repo, start_hash, end_hash=None, times=0):
+    commits_range = []
+
+    if end_hash:
+      for commit in list(repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL)):
+        if commit.hex == end_hash:
+          break
+        commits_range.append(commit)
+      commits_range.append(repo.revparse_single(end_hash))
+      return commits_range
+
+    if times:
+      count = 0
+      while times > 0:
+        commits_range.append(repo.revparse_single(str(start_hash) + "~" + str(count)))
+        count += 1
+        times -= 1
+      return commits_range
+
+  def get_updated_fn_per_commit(self, skip_initial=False, testing=False, end_hash=None, times=0):
     RepoManager.initial_cleanup()
 
     updates_json = {}
@@ -422,7 +442,11 @@ class RepoManager:
 
     commit_count = 0
 
-    commits = list(patch_repo.walk(patch_repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL))
+    if not end_hash and not times:
+      commits = list(patch_repo.walk(patch_repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL))
+    else:
+      commits = self.commit_list(patch_repo, 'HEAD', end_hash, times)
+
     for commit in commits:
       patch_hash, original_hash = commit.hex, commit.parents[0].hex if commit.parents else None
 
@@ -443,10 +467,13 @@ class RepoManager:
       if self.save_json:
         diffs = diff_summary.diff_for_json()
         if diffs:
-          lines_no = 0
-          for _, lines in diffs.items():
-            lines_no += len(lines)
-          updates_json[patch_hash] = lines_no
+          if self.track_json == 'loc':
+            lines_no = 0
+            for _, lines in diffs.items():
+              lines_no += len(lines)
+            updates_json[patch_hash] = lines_no
+          elif self.track_json == 'diff':
+            updates_json[patch_hash] = diffs
 
       if not original_hash and skip_initial:
         print('Skipping original commit...')
@@ -580,6 +607,7 @@ def main(main_args):
   parser.add_argument('-ri', '--rangeInt', type=int, metavar='N', help='look at patches for the previous N commits (preceding HASH)')
   parser.add_argument('-rh', '--range', metavar='INIT_HASH', help='look at patches between INIT_HASH and HASH')
   parser.add_argument('--save-json', dest='json', action='store_true', help='output function update information in JSON format')
+  parser.add_argument('--track', dest='track', choices=['loc', 'diff'], default='diff', help='what data to save')
 
   # Dictionary of arguments
   args_orig = parser.parse_args(main_args)
@@ -588,7 +616,7 @@ def main(main_args):
   # Handle printing
   OutputManager.should_print = bool(args['verbose'])
 
-  repo_manager = RepoManager(args['gitrepo'], bool(args['cache']), args['print'], bool(args['json']))
+  repo_manager = RepoManager(args['gitrepo'], bool(args['cache']), args['print'], bool(args['json']), args['track'])
 
   sys.stdout = OutputManager.output
    
@@ -598,6 +626,10 @@ def main(main_args):
     repo_manager.compare_patches_in_range(args['hash'], target_commit=args['range'])
   elif args['hash'] and args['rangeInt']:
     repo_manager.compare_patches_in_range(args['hash'], times=int(args['rangeInt']))
+  elif (args['plot'] or args['summary']) and args['range']:
+    repo_manager.get_updated_fn_per_commit(args['skip'], end_hash=args['range'])
+  elif (args['plot'] or args['summary']) and args['rangeInt']:
+    repo_manager.get_updated_fn_per_commit(args['skip'], times=int(args['rangeInt']))
   elif args['plot'] or args['summary']:
     repo_manager.get_updated_fn_per_commit(args['skip'])
 
