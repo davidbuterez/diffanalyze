@@ -18,6 +18,7 @@ from termcolor import colored
 
 GIT_EMPTY_TREE_ID = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
 
+# Takes care of where the output from print goes and provides some utility functions
 class OutputManager:
 
   should_print = False
@@ -61,6 +62,7 @@ class OutputManager:
       if str and str != '\n':
         print(str)
 
+# Keeps track of added and removed lines
 class ChangedLinesManager:
 
   def __init__(self, added_lines, removed_lines, patch_commit):
@@ -80,6 +82,7 @@ class ChangedLinesManager:
       print(*self.removed_lines, end='')
       print(']')
 
+# Concise representation of the data obtained from universalctags
 class FnAttributes:
 
   def __init__(self, fn_name, start, end, prototype):
@@ -93,6 +96,7 @@ class FnAttributes:
     self.end_line = end
     self.prototype = trim_prototype(prototype)
 
+# Computes and stores the targets, as lines of added code
 class FileDifferences:
   
   def __init__(self, filename, patch):
@@ -213,6 +217,7 @@ class DiffSummary:
 
     return file_to_changed_lines
 
+# Handles all interactions with the git repository
 class RepoManager:
 
   def __init__(self, repo_url, cache, print_mode, save_json, track_json):
@@ -286,7 +291,7 @@ class RepoManager:
 
       return repo
 
-    # if not repo:
+    # If not repo:
     repo = pygit2.Repository(discover_repo_path)
 
     # A different repo is found
