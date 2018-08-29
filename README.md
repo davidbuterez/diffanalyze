@@ -34,7 +34,8 @@ Arguments:
 - `--plot, -p` - saves a graph of the data given in the summary
 - `--skip-initial, -i` - skip the initial commit, as it may very large and not of interest
 - `--limit, -l N` - only plot the data of the first N commits (e.g. first 25 commits)
-
+- `--rangeInt, -ri N` - same as above
+- `--range, -rh INIT_HASH` - same as above
 
 ## Installation
 ### Ubuntu
@@ -77,3 +78,6 @@ Assuming you have `brew` installed:
 - `pip3 install pyqt5`
 - `pip3 install termcolor`
 - `git clone https://github.com/universal-ctags/ctags; cd ctags; ./autogen.sh; ./configure --program-prefix=universal; make`
+
+## Known issues
+The matplotlib graphs can look weird when inspecting a small number (e.g. 4) of patches with the `--range` arguments.
